@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>部署 node.js 應用程式 - 使用 Capistrano 與 PM2 - 愛雅小舖</title>
+    <base href="http://ayaya.tw/">
+    
+    
+    
+    
+    <link rel="stylesheet" href="http://ayaya.tw/css/main.min.77a5141f9ea67f9ba748fc3698ced30b1fe5cbd999287eedeeef6263b735f340.css">
+</head>
+<body><header>
+    <nav class="breadcrumb">
+        
+        <a href="/">/Home</a>
+        
+        <a href="/posts">/Posts</a>
+        
+        <a href="/donate">/Donate</a>
+        
+        <a href="/about">/About</a>
+        
+    </nav>
+</header>
+<div class="container">
+<main id="single">
+    <h1>部署 node.js 應用程式 - 使用 Capistrano 與 PM2</h1>
+    <h2><time datetime="2015-11-22T00:00:00&#43;0000">2015-11-22</time>
+</h2>
+    <section class="post-content">
+        <p>捨棄 <a href="https://github.com/foreverjs/forever">forever</a> 吧, <a href="https://github.com/Unitech/pm2">PM2</a> 是個好東西.</p>
+
+<p>本機安裝 Capistrano:</p>
+
+<pre><code>gem install capistrano
+</code></pre>
+
+<p>初始化:</p>
+
+<pre><code>cap install
+</code></pre>
+
+<p>然後在 <code>config/deploy/</code> 中設定各環境的主機位置等資訊.</p>
+
+<p>在 <code>config/deploy.rb</code> 設定共同資訊 (<code>application</code>, <code>repo_url</code>, <code>deploy_to</code>, &hellip;), 其中要特別提到的有:</p>
+
+<pre><code class="language-ruby"># Default value for linked_dirs is []
+set :linked_dirs, fetch(:linked_dirs, []).push('node_modules')
+
+# Default value for default_env is {}
+set :default_env, { node_env: 'production' }
+</code></pre>
+
+<p>將 <code>node_modules</code> 設為 <code>linked_dirs</code> 可以避免每次 <code>npm install</code> 都重新安裝一樣的套件.</p>
+
+<p>加入這些代碼, 就會在更新完程式碼後跑 <code>npm install --production</code>:</p>
+
+<pre><code class="language-ruby">namespace :npm do
+  task :install do
+    on roles(:app) do
+      within release_path do
+        execute :npm, 'install', '--production'
+      end
+    end
+  end
+end
+
+before 'deploy:updated', 'npm:install'
+</code></pre>
+
+<p>在遠端主機上準備 <code>&lt;deploy_to&gt;/shared/processes.json</code> (自行替換 <code>&lt;deploy_to&gt;</code> 與 <code>&lt;application_name&gt;</code>):</p>
+
+<pre><code class="language-json">{
+  &quot;apps&quot; : [{
+    &quot;name&quot;        : &quot;&lt;application_name&gt;&quot;,
+    &quot;script&quot;      : &quot;index.js&quot;,
+    &quot;instances&quot;   : 0,
+    &quot;exec_mode&quot;   : &quot;cluster_mode&quot;,
+    &quot;run_as_user&quot; : &quot;deploy&quot;,
+    &quot;watch&quot;       : false,
+    &quot;node_args&quot;   : &quot;--harmony&quot;,
+    &quot;merge_logs&quot;  : true,
+    &quot;cwd&quot;         : &quot;&lt;deploy_to&gt;/current&quot;,
+    &quot;env&quot;: {
+      &quot;NODE_ENV&quot;: &quot;production&quot;
+    }
+  }]
+}
+</code></pre>
+
+<p>並且安裝好 pm2:</p>
+
+<pre><code>npm install -g pm2
+</code></pre>
+
+<p>回到本機, 在 <code>deploy.rb</code> 中加入:</p>
+
+<pre><code class="language-ruby">namespace :pm2 do
+  task :start do
+    on roles(:app) do
+      within shared_path do
+        execute :pm2, 'start processes.json'
+      end
+    end
+  end
+
+  task :restart do
+    on roles(:app) do
+      execute :pm2, 'startOrReload &lt;application_name&gt;'
+    end
+  end
+
+  task :stop do
+    on roles(:app) do
+      execute :pm2, 'stop &lt;application_name&gt;'
+    end
+  end
+end
+
+after 'deploy', 'pm2:restart'
+</code></pre>
+
+<p>現在就可以使用 <code>cap staging deploy</code> 部署了.</p>
+
+    </section>
+</main>
+
+        </div><footer>
+    <span class="footer-text">Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></span>
+</footer>
+
+<script src="http://ayaya.tw/js/highlight.pack.13389e4e093fc0b3466287ead64c1f9fc3007d7703813a413de3f046ea09a346.js" integrity="sha256-EzieTgk/wLNGYofq1kwfn8MAfXcDgTpBPePwRuoJo0Y="></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

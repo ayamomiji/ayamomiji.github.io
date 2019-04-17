@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on 愛雅小舖</title>
+    <link>http://ayaya.tw/posts/</link>
+    <description>Recent content in Posts on 愛雅小舖</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-TW</language>
+    <lastBuildDate>Sat, 01 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://ayaya.tw/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>React Native 與 React DOM 差異</title>
+      <link>http://ayaya.tw/posts/2018/react-native-vs-dom/</link>
+      <pubDate>Sat, 01 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2018/react-native-vs-dom/</guid>
+      <description>事情是這樣的, 我被朋友騙去寫了 React Native, 號稱只要我會 React 就會寫 React Native, 於是來紀錄一下這些讓我相當火大又浪費一堆時間的東西. 既然朋友都這樣說了, 他還跟你說</description>
+    </item>
+    
+    <item>
+      <title>Stimulus 使用心得</title>
+      <link>http://ayaya.tw/posts/2018/using-stimulus/</link>
+      <pubDate>Sun, 01 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2018/using-stimulus/</guid>
+      <description>Stimulus 是一個簡單的 JavaScript 框架, 它最主要的特色是可以使用你現有的 HTML 去賦予他們生命 (類似於 Angular 1.0, 但是簡單許多). 在透過將試作型討戰網上的大大小小以 Stimulus 改寫後</description>
+    </item>
+    
+    <item>
+      <title>Rails 5.1.0.rc1 &#43; Webpacker 各種流水賬</title>
+      <link>http://ayaya.tw/posts/2017/webpacker/</link>
+      <pubDate>Wed, 05 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2017/webpacker/</guid>
+      <description>Rails 5.1 的一大賣點是支援 Webpack (透過 webpacker gem). 以前曾經在某專案嘗試把 webpack 融入一個 rails 4.2 專案, 支援 react, redux, es6, &amp;hellip; 後來順利完成了, 當時整理了一堆相關設定等等, 但一直都沒</description>
+    </item>
+    
+    <item>
+      <title>Reboot</title>
+      <link>http://ayaya.tw/posts/2015/reboot/</link>
+      <pubDate>Sun, 22 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2015/reboot/</guid>
+      <description>總之大概會寫些這些方面的東西: ruby, rails javascript, node.js react, flux, universal javascript webapp css3, scss 舊的 blog 的內容根據內容時效性也會陸續搬過來.</description>
+    </item>
+    
+    <item>
+      <title>部署 node.js 應用程式 - 使用 Capistrano 與 PM2</title>
+      <link>http://ayaya.tw/posts/2015/deploy-node-app/</link>
+      <pubDate>Sun, 22 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2015/deploy-node-app/</guid>
+      <description>捨棄 forever 吧, PM2 是個好東西. 本機安裝 Capistrano: gem install capistrano 初始化: cap install 然後在 config/deploy/ 中設定各環境的主機位置等資訊. 在 config/deploy.rb 設定共同資訊 (application, repo_url, deploy_to, &amp;hellip;), 其中要特別提到的有: # Default value</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Stimulus 使用心得 - 愛雅小舖</title>
+    <base href="http://ayaya.tw/">
+    
+    
+    
+    
+    <link rel="stylesheet" href="http://ayaya.tw/css/main.min.77a5141f9ea67f9ba748fc3698ced30b1fe5cbd999287eedeeef6263b735f340.css">
+</head>
+<body><header>
+    <nav class="breadcrumb">
+        
+        <a href="/">/Home</a>
+        
+        <a href="/posts">/Posts</a>
+        
+        <a href="/donate">/Donate</a>
+        
+        <a href="/about">/About</a>
+        
+    </nav>
+</header>
+<div class="container">
+<main id="single">
+    <h1>Stimulus 使用心得</h1>
+    <h2><time datetime="2018-07-01T00:00:00&#43;0000">2018-07-01</time>
+</h2>
+    <section class="post-content">
+        
+
+<p><a href="https://stimulusjs.org/">Stimulus</a> 是一個簡單的 JavaScript 框架,
+它最主要的特色是可以使用你現有的 HTML 去賦予他們生命 (類似於 Angular 1.0, 但是簡單許多).</p>
+
+<p>在透過將<a href="http://bunya.tw/">試作型討戰網</a>上的大大小小以 Stimulus 改寫後, 獲得了許多零散的心得.
+若你對 Stimulus 有興趣, 但不知道是否該引入到目前的專案的話, 這篇筆記或許可以幫助到你.</p>
+
+<h2 id="專案背景簡介">專案背景簡介</h2>
+
+<ul>
+<li><a href="http://bunya.tw/">試作型討戰網</a>是一個 Ruby on Rails 網頁應用程式.</li>
+<li>它不是一個 Single Page App, 也沒有在所有的地方都使用 React, 使用了 Turbolinks.</li>
+<li>前端使用了 React 與 Redux 建構那些比較複雜的地方.</li>
+</ul>
+
+<h2 id="stimulus-的吸引力">Stimulus 的吸引力</h2>
+
+<ul>
+<li>可以直接使用 Rails app 的 view, 不需要維護兩份.</li>
+<li>可以用<strong>任何</strong>自己喜歡方式操作 HTML, 例如可以使用 <code>insertAdjacentHTML</code>, 甚至可以直接使用 <code>innerHTML</code>.</li>
+<li>Stimulus 透過使用 Mutation Observer 監視任何變更, 會自動綁定任何擁有 controller 的元素, 我甚至能做到在做某些事情後執行 <code>el.setAttribute('data-controller', controllers)</code> 去追加 controller.</li>
+<li>可以直接操作 DOM 在某些場合很方便, 這點在 React 挺麻煩的&hellip;</li>
+<li>喜歡某個 jQuery plugin 但它沒有 React 版本, 你可以直接使用, 沒有額外煩惱.</li>
+<li>如果你喜歡 UJS, 那你也一定會喜歡 Stimulus.</li>
+<li>學習與開發成本非常低, 你是公司唯一的網頁開發者嗎? 這會是你的好朋友, 而且不會有任何 React 的前端開發者嘗試阻止你.</li>
+</ul>
+
+<h2 id="stimulus-的麻煩點">Stimulus 的麻煩點</h2>
+
+<ul>
+<li>直接操作 DOM 是一件很痛苦的事情, 不過這方面可以用 jQuery 讓自己少點痛苦. 也可以嘗試使用 <a href="https://github.com/kenwheeler/cash">Cash</a></li>
+<li>與其他 controller 溝通不太方便, 它提供了 <code>application.getControllerForElementAndIdentifier</code> 方法, 但這名字長到怎麼看都不是鼓勵使用者頻繁使用的方法.</li>
+<li>另一個與其他 controller 溝通的方法是觸發 CustomEvent.</li>
+<li>如果像我一樣不喜歡把所有的功能混一起寫, 那你可能會在 HTML 中看到大量的 <code>data-controller</code> <code>data-action</code> <code>data-target</code> 地獄.</li>
+</ul>
+
+<h2 id="如何與-react-元件溝通">如何與 React 元件溝通?</h2>
+
+<p>如果使用 Redux, 那最好的方式應該是使用 <code>store.dispatch(action)</code> 去更新 store, 讓它去影響 React 元件.</p>
+
+<h2 id="在-react-中使用-stimulus-controller">在 React 中使用 Stimulus controller?</h2>
+
+<p>我覺得可以, 但我還沒嘗試過, 如果只是做一些只操作某些 DOM 屬性的功能應該很適合吧.</p>
+
+<p>像最後面附上的這個範例.</p>
+
+<h2 id="使用-stimulus-完全取代-react">使用 Stimulus 完全取代 React?</h2>
+
+<p>可行, 但我認為他們的強項不同, 何時該用哪個完全是看情況而定.</p>
+
+<h2 id="範例">範例</h2>
+
+<p><a href="https://gist.github.com/ayamomiji/e755bb1b7f477840e4d66b8a2ba7acea">https://gist.github.com/ayamomiji/e755bb1b7f477840e4d66b8a2ba7acea</a></p>
+
+<p>這是一個智慧捲動的範例: 在新元素被插入前, 如果捲軸已經捲動到最底下了, 就在插入元素後捲動到最後.</p>
+
+<p>Stimulus 並不鼓勵與其他 controller 頻繁互動, 但我覺得在這個例子, 與 parent controller 溝通很方便, 因此寫了這個方法, 並且要求自己儘量最小幅度的使用它.</p>
+
+<pre><code class="language-javascript">export function getParentController(controller, identifier) {
+  const application = controller.application
+  let element = controller.element
+  do {
+    let foundController =
+      application.getControllerForElementAndIdentifier(element, identifier)
+    if (foundController) {
+      return foundController
+    }
+  } while (element = element.parentElement)
+}
+</code></pre>
+
+    </section>
+</main>
+
+        </div><footer>
+    <span class="footer-text">Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></span>
+</footer>
+
+<script src="http://ayaya.tw/js/highlight.pack.13389e4e093fc0b3466287ead64c1f9fc3007d7703813a413de3f046ea09a346.js" integrity="sha256-EzieTgk/wLNGYofq1kwfn8MAfXcDgTpBPePwRuoJo0Y="></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

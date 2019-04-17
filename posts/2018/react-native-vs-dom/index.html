@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>React Native 與 React DOM 差異 - 愛雅小舖</title>
+    <base href="http://ayaya.tw/">
+    
+    
+    
+    
+    <link rel="stylesheet" href="http://ayaya.tw/css/main.min.77a5141f9ea67f9ba748fc3698ced30b1fe5cbd999287eedeeef6263b735f340.css">
+</head>
+<body><header>
+    <nav class="breadcrumb">
+        
+        <a href="/">/Home</a>
+        
+        <a href="/posts">/Posts</a>
+        
+        <a href="/donate">/Donate</a>
+        
+        <a href="/about">/About</a>
+        
+    </nav>
+</header>
+<div class="container">
+<main id="single">
+    <h1>React Native 與 React DOM 差異</h1>
+    <h2><time datetime="2018-09-01T00:00:00&#43;0000">2018-09-01</time>
+</h2>
+    <section class="post-content">
+        <p>事情是這樣的, 我被朋友騙去寫了 React Native, 號稱只要我會 React 就會寫 React Native, 於是來紀錄一下這些讓我相當火大又浪費一堆時間的東西.</p>
+
+<p>既然朋友都這樣說了, 他還跟你說了 <strong>你只要把 div 換成 View, span 換成 Text, 剩下都差不多</strong> 這樣的事情, 沒有仔細閱讀文件的我就撞個滿頭包了&hellip;</p>
+
+<ul>
+<li>Style 寫起來真是超絕痛苦, 於是我一開始就是寫 helper 把這部分智障化.</li>
+<li>Text 好像是 inline 卻又不是 inline, 有些 style 有影響, 有些卻沒有.</li>
+<li>Flexbox 預設的方向是 column, 不是 row (WTF?)</li>
+<li>TextInput 不認識 <code>onInput</code>, <code>onKeyDown</code>, 他只認得 <code>onChangeText</code> 而且直接給 value, 而且在使用 Controlled Component 模式時會有中文輸入問題.</li>
+<li>但是 <a href="https://github.com/lawnstarter/react-native-picker-select">Select</a> 的卻是 <code>onValueChange</code> 而不是 <code>onChangeValue</code></li>
+<li>模擬器操作超絕不人性化, 逼人用實體機器. (React Native: 又不是我的錯 QQ)</li>
+</ul>
+
+<p>總之在一個多月的碰撞以後, 對 React Native 的元件使用已經有了相當的理解, 排版能夠自由使用 flexbox 也算是挺方便的, 我很感謝這位朋友給了我這個機會去體驗這項潮潮技術, 但可以的話, 我這輩子以後不會想再寫 React Native 了&hellip; 畢竟其實我本來就不是很喜歡 React.</p>
+
+<p>除此之外, 還試著體驗在 Ruby on Rails 專案上實作 GraphQL 的介面, 前端採用 Apollo Client, 感覺良好舒適無比.</p>
+
+<p>如果你的團隊需要資深後端/全端工程師, 歡迎聯繫我, 全職/兼職皆可.</p>
+
+    </section>
+</main>
+
+        </div><footer>
+    <span class="footer-text">Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></span>
+</footer>
+
+<script src="http://ayaya.tw/js/highlight.pack.13389e4e093fc0b3466287ead64c1f9fc3007d7703813a413de3f046ea09a346.js" integrity="sha256-EzieTgk/wLNGYofq1kwfn8MAfXcDgTpBPePwRuoJo0Y="></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
