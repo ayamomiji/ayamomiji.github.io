@@ -6,10 +6,19 @@
     <description>Recent content in Posts on 愛雅小舖</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-TW</language>
-    <lastBuildDate>Sat, 01 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 24 May 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ayaya.tw/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Webpacker 安裝 Vue.js 與 pug</title>
+      <link>http://ayaya.tw/posts/2019/install-vue-and-pug-webpacker/</link>
+      <pubDate>Fri, 24 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2019/install-vue-and-pug-webpacker/</guid>
+      <description>最近有點想學點不同的東西, 因此想嘗試 vue.js. 在 survey 的過程中發現了 pug 這個東西, 和 ruby 的 slim 類似. 以前在寫 react 的過程中, 我認為最討厭的一點就是寫 jsx 了, 一不小心</description>
+    </item>
     
     <item>
       <title>React Native 與 React DOM 差異</title>
