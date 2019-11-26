@@ -6,10 +6,19 @@
     <description>Recent content in Posts on 愛雅小舖</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-TW</language>
-    <lastBuildDate>Fri, 24 May 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 26 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ayaya.tw/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>重寫書籤樹</title>
+      <link>http://ayaya.tw/posts/2019/rewrite-bookmark-tree/</link>
+      <pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2019/rewrite-bookmark-tree/</guid>
+      <description>在整理作品的時候, 無意間發現了這篇文章, 想不到 2018 了還有人在用, 甚至還有人幫忙編譯成新版 chrome 相容&amp;hellip; 想說這其實也不是很難的東西, 我就</description>
+    </item>
     
     <item>
       <title>Webpacker 安裝 Vue.js 與 pug</title>

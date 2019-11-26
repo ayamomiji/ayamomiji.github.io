@@ -4,13 +4,17 @@
   
   <url>
     <loc>http://ayaya.tw/</loc>
-    <lastmod>2019-05-24T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>http://ayaya.tw/posts/</loc>
-    <lastmod>2019-05-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
+    <lastmod>2019-11-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://ayaya.tw/posts/2019/rewrite-bookmark-tree/</loc>
+    <lastmod>2019-11-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -45,12 +49,10 @@
   
   <url>
     <loc>http://ayaya.tw/categories/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>http://ayaya.tw/tags/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
