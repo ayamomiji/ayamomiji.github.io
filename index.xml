@@ -75,6 +75,15 @@
     </item>
     
     <item>
+      <title>作品</title>
+      <link>http://ayaya.tw/works/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/works/</guid>
+      <description>試作型討戰網 ayaya 的書籤樹 接頭霸王</description>
+    </item>
+    
+    <item>
       <title>感謝您的贊助</title>
       <link>http://ayaya.tw/thank-you/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -89,7 +98,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://ayaya.tw/donate/</guid>
-      <description>如果本站的內容有幫助到你, 請考慮贊助, 這可以讓我更有動力去將我的開發經驗文字化! Patreon 歐付寶</description>
+      <description>如果本站或本人的作品有幫助到你, 請考慮贊助! Patreon 歐付寶</description>
     </item>
     
     <item>
@@ -98,7 +107,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://ayaya.tw/about/</guid>
-      <description>我是資深網頁開發者, 狩獵範圍廣泛. 熟悉使用 Ruby on Rails 開發網頁應用程式與網路服務 API. 熟悉使用 React, Stimulus 等框架開發前端程式. 喜歡簡潔易懂的程式碼, 喜歡學習新</description>
+      <description>我是資深網頁開發者, 狩獵範圍廣泛. 熟悉使用 Ruby on Rails 開發網頁應用程式與網路服務 API. 熟悉使用 React, Svelte 等框架開發前端程式. 喜歡簡潔易懂的程式碼, 喜歡學習新</description>
     </item>
     
   </channel>
