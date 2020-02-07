@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ruby lazy enumerator 使用範例 - 愛雅小舖</title>
+    <base href="http://ayaya.tw/">
+    
+    
+    
+    
+    <link rel="stylesheet" href="http://ayaya.tw/css/main.min.d1a35de747f32f38def9b85df0ddc1ae0d95ca476bb14c10d484610ddcc1acda.css">
+</head>
+<body><header>
+    <nav class="breadcrumb">
+        
+        <a href="/">/Home</a>
+        
+        <a href="/posts">/Posts</a>
+        
+        <a href="/works">/Works</a>
+        
+        <a href="/donate">/Donate</a>
+        
+        <a href="/about">/About</a>
+        
+    </nav>
+</header>
+<div class="container">
+<main id="single">
+    <h1>Ruby lazy enumerator 使用範例</h1>
+    <h2></h2>
+    <section class="post-content">
+        <p>善用 lazy enumerator 除了可以增進效能以外, 還能夠讓程式更容易閱讀, 像是以下這個例子:</p>
+
+<pre><code class="language-ruby">response = Faraday.get(url)
+body = Oga.parse_html(response.body)
+
+body.css('meta[property=&quot;og:image&quot;]').first.try(:get, 'content') ||
+  body.css('link[rel=&quot;image_src&quot;]').first.try(:get, 'href') ||
+  body.css('img').first.try(:get, 'src')
+</code></pre>
+
+<p>這段程式碼嘗試從 html 中解析出適合作為該網頁縮圖的圖片, 但有幾個不太舒服的點:</p>
+
+<ol>
+<li>因為元素可能不存在, 因此當中使用了很多 <code>try</code> 一一檢查.</li>
+<li>寫成一排太長, 但因為是長敘述換行, 不縮排也很奇怪, 怎樣都不舒服.</li>
+</ol>
+
+<p>現實中也是常有這種 &ldquo;先嘗試 A, 不行的話做 B, 還是不行的話做 C&rdquo;, 如果 A, B, C 很複雜的話, 通常會寫成 method, 大概像這樣:</p>
+
+<pre><code class="language-ruby">find_image_from_og(body) || find_image_from_rel(body) || find_image_from_img_tag(body)
+</code></pre>
+
+<p>但這裡也可以使用 lazy enumerator 來做這件事情, 寫起來像這樣:</p>
+
+<pre><code class="language-ruby">def try_blocks(*blocks)
+  blocks.lazy.map { |block| block.call rescue nil }.reject(&amp;:blank?).first
+end
+
+try_blocks(
+  -&gt; { body.css('meta[property=&quot;og:image&quot;]').first.get('content') },
+  -&gt; { body.css('link[rel=&quot;image_src&quot;]').first.get('href') },
+  -&gt; { body.css('img').first.get('src') }
+)
+</code></pre>
+
+    </section>
+</main>
+
+        </div><footer>
+    <ul class="lang-selector">
+    
+</ul>
+
+    <span class="footer-text">Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></span>
+</footer>
+
+<script src="http://ayaya.tw/js/highlight.pack.13389e4e093fc0b3466287ead64c1f9fc3007d7703813a413de3f046ea09a346.js" integrity="sha256-EzieTgk/wLNGYofq1kwfn8MAfXcDgTpBPePwRuoJo0Y="></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

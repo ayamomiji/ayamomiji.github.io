@@ -6,10 +6,19 @@
     <description>Recent content in Posts on 愛雅小舖</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-TW</language>
-    <lastBuildDate>Tue, 26 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 07 Feb 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ayaya.tw/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ruby lazy enumerator 使用範例</title>
+      <link>http://ayaya.tw/posts/2020/ruby-lazy-enumerator-example/</link>
+      <pubDate>Fri, 07 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2020/ruby-lazy-enumerator-example/</guid>
+      <description>善用 lazy enumerator 除了可以增進效能以外, 還能夠讓程式更容易閱讀, 像是以下這個例子: response = Faraday.get(url) body = Oga.parse_html(response.body) body.css(&#39;meta[property=&amp;quot;og:image&amp;quot;]&#39;).first.try(:get, &#39;content&#39;) || body.css(&#39;link[rel=&amp;quot;image_src&amp;quot;]&#39;).first.try(:get, &#39;href&#39;) || body.css(&#39;img&#39;).first.try(:get, &#39;src&#39;) 這段程式碼嘗試從 html 中解析出適合作為該網頁</description>
+    </item>
     
     <item>
       <title>重寫書籤樹</title>
