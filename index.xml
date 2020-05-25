@@ -6,10 +6,19 @@
     <description>Recent content in Home on 愛雅小舖</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-TW</language>
-    <lastBuildDate>Fri, 07 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 25 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ayaya.tw/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>BehaveFun: 使用 Ruby 實作的行為樹</title>
+      <link>http://ayaya.tw/posts/2020/behave-fun/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2020/behave-fun/</guid>
+      <description>行為樹是一個常被使用在設計遊戲 AI 的模式, 其可以使用靜態資料表示並處理複雜且有狀態的流程. 在遊戲開發的過程中, 如果有多種 NPC 都具有自己的行為模式</description>
+    </item>
     
     <item>
       <title>Ruby lazy enumerator 使用範例</title>
