@@ -31,98 +31,74 @@
     <h2></h2>
     <section class="post-content">
         <p>捨棄 <a href="https://github.com/foreverjs/forever">forever</a> 吧, <a href="https://github.com/Unitech/pm2">PM2</a> 是個好東西.</p>
-
 <p>本機安裝 Capistrano:</p>
-
 <pre><code>gem install capistrano
-</code></pre>
-
-<p>初始化:</p>
-
+</code></pre><p>初始化:</p>
 <pre><code>cap install
-</code></pre>
-
-<p>然後在 <code>config/deploy/</code> 中設定各環境的主機位置等資訊.</p>
-
+</code></pre><p>然後在 <code>config/deploy/</code> 中設定各環境的主機位置等資訊.</p>
 <p>在 <code>config/deploy.rb</code> 設定共同資訊 (<code>application</code>, <code>repo_url</code>, <code>deploy_to</code>, &hellip;), 其中要特別提到的有:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># Default value for linked_dirs is []</span>
+set <span style="color:#e6db74">:linked_dirs</span>, fetch(<span style="color:#e6db74">:linked_dirs</span>, <span style="color:#f92672">[]</span>)<span style="color:#f92672">.</span>push(<span style="color:#e6db74">&#39;node_modules&#39;</span>)
 
-<pre><code class="language-ruby"># Default value for linked_dirs is []
-set :linked_dirs, fetch(:linked_dirs, []).push('node_modules')
-
-# Default value for default_env is {}
-set :default_env, { node_env: 'production' }
-</code></pre>
-
-<p>將 <code>node_modules</code> 設為 <code>linked_dirs</code> 可以避免每次 <code>npm install</code> 都重新安裝一樣的套件.</p>
-
+<span style="color:#75715e"># Default value for default_env is {}</span>
+set <span style="color:#e6db74">:default_env</span>, { <span style="color:#e6db74">node_env</span>: <span style="color:#e6db74">&#39;production&#39;</span> }
+</code></pre></div><p>將 <code>node_modules</code> 設為 <code>linked_dirs</code> 可以避免每次 <code>npm install</code> 都重新安裝一樣的套件.</p>
 <p>加入這些代碼, 就會在更新完程式碼後跑 <code>npm install --production</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">namespace <span style="color:#e6db74">:npm</span> <span style="color:#66d9ef">do</span>
+  task <span style="color:#e6db74">:install</span> <span style="color:#66d9ef">do</span>
+    on roles(<span style="color:#e6db74">:app</span>) <span style="color:#66d9ef">do</span>
+      within release_path <span style="color:#66d9ef">do</span>
+        execute <span style="color:#e6db74">:npm</span>, <span style="color:#e6db74">&#39;install&#39;</span>, <span style="color:#e6db74">&#39;--production&#39;</span>
+      <span style="color:#66d9ef">end</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
 
-<pre><code class="language-ruby">namespace :npm do
-  task :install do
-    on roles(:app) do
-      within release_path do
-        execute :npm, 'install', '--production'
-      end
-    end
-  end
-end
-
-before 'deploy:updated', 'npm:install'
-</code></pre>
-
-<p>在遠端主機上準備 <code>&lt;deploy_to&gt;/shared/processes.json</code> (自行替換 <code>&lt;deploy_to&gt;</code> 與 <code>&lt;application_name&gt;</code>):</p>
-
-<pre><code class="language-json">{
-  &quot;apps&quot; : [{
-    &quot;name&quot;        : &quot;&lt;application_name&gt;&quot;,
-    &quot;script&quot;      : &quot;index.js&quot;,
-    &quot;instances&quot;   : 0,
-    &quot;exec_mode&quot;   : &quot;cluster_mode&quot;,
-    &quot;run_as_user&quot; : &quot;deploy&quot;,
-    &quot;watch&quot;       : false,
-    &quot;node_args&quot;   : &quot;--harmony&quot;,
-    &quot;merge_logs&quot;  : true,
-    &quot;cwd&quot;         : &quot;&lt;deploy_to&gt;/current&quot;,
-    &quot;env&quot;: {
-      &quot;NODE_ENV&quot;: &quot;production&quot;
+before <span style="color:#e6db74">&#39;deploy:updated&#39;</span>, <span style="color:#e6db74">&#39;npm:install&#39;</span>
+</code></pre></div><p>在遠端主機上準備 <code>&lt;deploy_to&gt;/shared/processes.json</code> (自行替換 <code>&lt;deploy_to&gt;</code> 與 <code>&lt;application_name&gt;</code>):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;apps&#34;</span> : [{
+    <span style="color:#f92672">&#34;name&#34;</span>        : <span style="color:#e6db74">&#34;&lt;application_name&gt;&#34;</span>,
+    <span style="color:#f92672">&#34;script&#34;</span>      : <span style="color:#e6db74">&#34;index.js&#34;</span>,
+    <span style="color:#f92672">&#34;instances&#34;</span>   : <span style="color:#ae81ff">0</span>,
+    <span style="color:#f92672">&#34;exec_mode&#34;</span>   : <span style="color:#e6db74">&#34;cluster_mode&#34;</span>,
+    <span style="color:#f92672">&#34;run_as_user&#34;</span> : <span style="color:#e6db74">&#34;deploy&#34;</span>,
+    <span style="color:#f92672">&#34;watch&#34;</span>       : <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;node_args&#34;</span>   : <span style="color:#e6db74">&#34;--harmony&#34;</span>,
+    <span style="color:#f92672">&#34;merge_logs&#34;</span>  : <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;cwd&#34;</span>         : <span style="color:#e6db74">&#34;&lt;deploy_to&gt;/current&#34;</span>,
+    <span style="color:#f92672">&#34;env&#34;</span>: {
+      <span style="color:#f92672">&#34;NODE_ENV&#34;</span>: <span style="color:#e6db74">&#34;production&#34;</span>
     }
   }]
 }
-</code></pre>
-
-<p>並且安裝好 pm2:</p>
-
+</code></pre></div><p>並且安裝好 pm2:</p>
 <pre><code>npm install -g pm2
-</code></pre>
+</code></pre><p>回到本機, 在 <code>deploy.rb</code> 中加入:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">namespace <span style="color:#e6db74">:pm2</span> <span style="color:#66d9ef">do</span>
+  task <span style="color:#e6db74">:start</span> <span style="color:#66d9ef">do</span>
+    on roles(<span style="color:#e6db74">:app</span>) <span style="color:#66d9ef">do</span>
+      within shared_path <span style="color:#66d9ef">do</span>
+        execute <span style="color:#e6db74">:pm2</span>, <span style="color:#e6db74">&#39;start processes.json&#39;</span>
+      <span style="color:#66d9ef">end</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
 
-<p>回到本機, 在 <code>deploy.rb</code> 中加入:</p>
+  task <span style="color:#e6db74">:restart</span> <span style="color:#66d9ef">do</span>
+    on roles(<span style="color:#e6db74">:app</span>) <span style="color:#66d9ef">do</span>
+      execute <span style="color:#e6db74">:pm2</span>, <span style="color:#e6db74">&#39;startOrReload &lt;application_name&gt;&#39;</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
 
-<pre><code class="language-ruby">namespace :pm2 do
-  task :start do
-    on roles(:app) do
-      within shared_path do
-        execute :pm2, 'start processes.json'
-      end
-    end
-  end
+  task <span style="color:#e6db74">:stop</span> <span style="color:#66d9ef">do</span>
+    on roles(<span style="color:#e6db74">:app</span>) <span style="color:#66d9ef">do</span>
+      execute <span style="color:#e6db74">:pm2</span>, <span style="color:#e6db74">&#39;stop &lt;application_name&gt;&#39;</span>
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
 
-  task :restart do
-    on roles(:app) do
-      execute :pm2, 'startOrReload &lt;application_name&gt;'
-    end
-  end
-
-  task :stop do
-    on roles(:app) do
-      execute :pm2, 'stop &lt;application_name&gt;'
-    end
-  end
-end
-
-after 'deploy', 'pm2:restart'
-</code></pre>
-
-<p>現在就可以使用 <code>cap staging deploy</code> 部署了.</p>
+after <span style="color:#e6db74">&#39;deploy&#39;</span>, <span style="color:#e6db74">&#39;pm2:restart&#39;</span>
+</code></pre></div><p>現在就可以使用 <code>cap staging deploy</code> 部署了.</p>
 
     </section>
 </main>

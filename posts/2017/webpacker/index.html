@@ -30,133 +30,68 @@
     <h1>Rails 5.1.0.rc1 &#43; Webpacker 各種流水賬</h1>
     <h2></h2>
     <section class="post-content">
-        
-
-<p>Rails 5.1 的一大賣點是支援 Webpack (透過 <code>webpacker</code> gem).</p>
-
+        <p>Rails 5.1 的一大賣點是支援 Webpack (透過 <code>webpacker</code> gem).</p>
 <p>以前曾經在某專案嘗試把 webpack 融入一個 rails 4.2 專案, 支援 react, redux, es6, &hellip;
 後來順利完成了, 當時整理了一堆相關設定等等, 但一直都沒機會再次使用到這些資料&hellip;</p>
-
 <p>看到 <a href="https://github.com/rails/webpacker">webpacker</a> 的時候真的是感動落淚!
 其實這個東西可以用在 rails 4.2 以上的專案, 所以這邊來嘗試一下能不能產生一個完全不需要 sprockets 的 rails 專案吧.</p>
-
 <p>首先我們要拿掉一堆東西:</p>
-
 <pre><code>$ gem install rails -v 5.1.0.rc1
 $ rails new &lt;app-name&gt; --no-rc --webpack --skip-sprockets --skip-coffee --skip-javascript --skip-turbolinks
-</code></pre>
-
-<p>但是 <code>app/assets</code> 還是會有一些不想看到的東西, 把他們砍掉吧:</p>
-
+</code></pre><p>但是 <code>app/assets</code> 還是會有一些不想看到的東西, 把他們砍掉吧:</p>
 <pre><code>$ rm -rf app/assets
-</code></pre>
-
-<p>要開兩個 server (rails 和 webpack) 太麻煩了, 用 foreman 來管理吧.</p>
-
+</code></pre><p>要開兩個 server (rails 和 webpack) 太麻煩了, 用 foreman 來管理吧.</p>
 <p>在 Gemfile 加入 <code>gem 'foreman'</code>, 建立一個 Procfile:</p>
-
 <pre><code>rails: bin/rails server
 webpack: bin/webpack-dev-server
-</code></pre>
-
-<p>然後隨便建立一個 controller, 把 root 指過去吧:</p>
-
+</code></pre><p>然後隨便建立一個 controller, 把 root 指過去吧:</p>
 <pre><code>$ rails generate controller home --no-assets --no-helper
-</code></pre>
-
-<p>修改 <code>app/views/layouts/application.html.erb</code>:</p>
-
+</code></pre><p>修改 <code>app/views/layouts/application.html.erb</code>:</p>
 <pre><code>&lt;%= stylesheet_pack_tag 'application' %&gt;
 &lt;%= javascript_pack_tag 'application' %&gt;
-</code></pre>
-
-<p>這個時候系統會跟你說找不到 application.css.</p>
-
+</code></pre><p>這個時候系統會跟你說找不到 application.css.</p>
 <p>webpacker 提供的設定中, 會將你任何在 [filename].js 中 require/import 的 css 檔案,
 全部抽出來變成 [filename].css (透過 <code>extract-text-webpack-plugin</code> 達成),
 所以只要在 application.js 中隨便 require/import 一個 css 即可:</p>
-
 <pre><code>import './application.css'
 // 或者
 require('./application.css')
-</code></pre>
-
-<p>這樣就沒問題了?</p>
-
+</code></pre><p>這樣就沒問題了?</p>
 <h2 id="react">React</h2>
-
 <p><a href="https://github.com/rails/webpacker">webpacker</a> 已經有寫好的設定了, 只要這樣:</p>
-
 <pre><code># 建立專案時
 $ rails new &lt;app_name&gt; --webpack=react
 # 之後追加
 $ rails webpacker:install:react
-</code></pre>
-
-<h2 id="action-cable">Action Cable</h2>
-
+</code></pre><h2 id="action-cable">Action Cable</h2>
 <p>用 yarn 安裝:</p>
-
 <pre><code>$ yarn add actioncable
-</code></pre>
-
-<p>在 javascript 中使用它:</p>
-
+</code></pre><p>在 javascript 中使用它:</p>
 <pre><code>import ActionCable from 'actioncable'
 
 let cable = ActionCable.createConsumer()
-</code></pre>
-
-<h2 id="jquery">jQuery</h2>
-
+</code></pre><h2 id="jquery">jQuery</h2>
 <p>跟 Action Cable 差不多&hellip;</p>
-
 <pre><code>$ yarn add jquery
-</code></pre>
-
-<pre><code>import $ from 'jquery'
-</code></pre>
-
-<h2 id="turbolinks">Turbolinks</h2>
-
+</code></pre><pre><code>import $ from 'jquery'
+</code></pre><h2 id="turbolinks">Turbolinks</h2>
 <p>跟 Action Cable 差不多&hellip;</p>
-
 <pre><code>$ yarn add turbolinks
-</code></pre>
-
-<pre><code>import Turbolinks from 'turbolinks'
+</code></pre><pre><code>import Turbolinks from 'turbolinks'
 Turbolinks.start()
-</code></pre>
-
-<h2 id="bootstrap">Bootstrap</h2>
-
+</code></pre><h2 id="bootstrap">Bootstrap</h2>
 <p>這個比較麻煩一點.</p>
-
 <pre><code>$ yarn add bootstrap
-</code></pre>
-
-<p>如果直接這樣的話, 會出現 <code>jQuery is not defined</code> (即使有 <code>import jQuery from 'jquery'</code>):</p>
-
+</code></pre><p>如果直接這樣的話, 會出現 <code>jQuery is not defined</code> (即使有 <code>import jQuery from 'jquery'</code>):</p>
 <pre><code>import 'bootstrap'
-</code></pre>
-
-<p>需要在 <code>config/webpack/shared.js</code> plugins 的陣列中加入:</p>
-
+</code></pre><p>需要在 <code>config/webpack/shared.js</code> plugins 的陣列中加入:</p>
 <pre><code>new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' })
-</code></pre>
-
-<p>這有點像是做這件事:</p>
-
+</code></pre><p>這有點像是做這件事:</p>
 <pre><code>window.$ = require('jquery')
 window.jQuery = require('jquery')
-</code></pre>
-
-<p>css 的部分:</p>
-
+</code></pre><p>css 的部分:</p>
 <pre><code>import 'bootstrap/dist/css/bootstrap'
-</code></pre>
-
-<p>To be continued?</p>
+</code></pre><p>To be continued?</p>
 
     </section>
 </main>

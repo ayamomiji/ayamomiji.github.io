@@ -31,74 +31,55 @@
     <h2></h2>
     <section class="post-content">
         <p>行為樹是一個常被使用在設計遊戲 AI 的模式, 其可以使用靜態資料表示並處理複雜且有狀態的流程.</p>
-
 <p>在遊戲開發的過程中, 如果有多種 NPC 都具有自己的行為模式, 例如一種敵人, 玩家靠近時會追著玩家跑, 貼在一起的時候會揍玩家, 遠離的時候會繼續追, 直到超出一個範圍, 可以使用有限狀態機處理:</p>
-
-<pre><code class="language-ruby">on_state :idle do
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">on_state <span style="color:#e6db74">:idle</span> <span style="color:#66d9ef">do</span>
   idle
-  enter_state :chase if distance_to(player) &lt; chase_range
-end
+  enter_state <span style="color:#e6db74">:chase</span> <span style="color:#66d9ef">if</span> distance_to(player) <span style="color:#f92672">&lt;</span> chase_range
+<span style="color:#66d9ef">end</span>
 
-on_state :chase do
+on_state <span style="color:#e6db74">:chase</span> <span style="color:#66d9ef">do</span>
   chase_player
-  enter_state :attack if distance_to(player) &lt; attack_range
-  enter_state :idle if distance_to(player) &gt;= chase_range
-end
+  enter_state <span style="color:#e6db74">:attack</span> <span style="color:#66d9ef">if</span> distance_to(player) <span style="color:#f92672">&lt;</span> attack_range
+  enter_state <span style="color:#e6db74">:idle</span> <span style="color:#66d9ef">if</span> distance_to(player) <span style="color:#f92672">&gt;=</span> chase_range
+<span style="color:#66d9ef">end</span>
 
-on_state :attack do
+on_state <span style="color:#e6db74">:attack</span> <span style="color:#66d9ef">do</span>
   deal_damage
-  enter_state :chase if distance_to(player) &gt;= attack_range
-end
-</code></pre>
-
-<p>在上面的例子中, 為了處理不同種類的敵人, 警戒範圍和射程可能不一樣, 可以透過設定實體的 <code>attack_range</code> 與 <code>chase_range</code> 值決定範圍.</p>
-
+  enter_state <span style="color:#e6db74">:chase</span> <span style="color:#66d9ef">if</span> distance_to(player) <span style="color:#f92672">&gt;=</span> attack_range
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>在上面的例子中, 為了處理不同種類的敵人, 警戒範圍和射程可能不一樣, 可以透過設定實體的 <code>attack_range</code> 與 <code>chase_range</code> 值決定範圍.</p>
 <p>但是使用狀態機最大的缺點就是不夠彈性, 而且難以重用.</p>
-
 <p>如果今天有一種敵人, 在生命低於一定值的時候會逃跑, 那麼我們可能 <strong>需要修改所有狀態的程式碼</strong> 去實作這樣的效果.</p>
-
 <p>那如果今天又有一種特別的敵人他會在生命高於一定值的時候做某些事情&hellip;</p>
-
 <p>今天我想為玩家添加 NPC 隊友, 他一樣會追著玩家跑, 但追到以後不是攻擊而是治癒玩家&hellip;</p>
-
 <p>今天這個遊戲成長到了有上百種敵人和隊友, 我若不是有一顆超級大的有限狀態機, 有超級多的選項需要去調整, 就是需要個別實作每個 NPC 的行為, 而且如果設計師說, 我覺得這距離應該調整一下&hellip; (調整後&hellip;) 還是調回來好了&hellip; 他們不會 (或不想) 去改程式, 開發者就必須每次都去修改程式碼去達到這些效果.</p>
-
 <p>使用行為樹可以優雅的解決掉這個問題, 我們可以改成這樣的一棵樹:</p>
-
-<pre><code class="language-ruby">tree {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">tree {
   repeat {
     selector {
       sequence {
-        check_player_distance(in: attack_range)
+        check_player_distance(<span style="color:#66d9ef">in</span>: attack_range)
         deal_damage
       }
       sequence {
-        check_player_distance(in: chase_range)
+        check_player_distance(<span style="color:#66d9ef">in</span>: chase_range)
         chase_player
       }
       idle
     }
   }
 }
-</code></pre>
-
-<p>由於這個樹可以以靜態資料表示, 因此可以轉成其他格式存取以及編輯, 例如我可以把它存成 json, 然後寫一個編輯器讓設計師可以使用更直覺的方式去編輯行為. 對於不同的 NPC, 可以輕易的複製現有 NPC 的資料進行微調, 或者直接產生一個完全不同的行為模式出來. 開發者需要做的事情就只是提供更多有用的工作供設計者使用.</p>
-
+</code></pre></div><p>由於這個樹可以以靜態資料表示, 因此可以轉成其他格式存取以及編輯, 例如我可以把它存成 json, 然後寫一個編輯器讓設計師可以使用更直覺的方式去編輯行為. 對於不同的 NPC, 可以輕易的複製現有 NPC 的資料進行微調, 或者直接產生一個完全不同的行為模式出來. 開發者需要做的事情就只是提供更多有用的工作供設計者使用.</p>
 <p>那麼, 有什麼 gem 可以幫助我去實現這個東西呢?</p>
-
 <p>可惜的是, 目前似乎並沒有足夠好用的相關 gem, 因此我自己寫了一個: <a href="https://github.com/ayamomiji/behave_fun">BehaveFun</a>.</p>
-
 <p>BehaveFun 有幾個特性:</p>
-
 <ul>
 <li>行為樹可以容易的序列化和組合</li>
 <li>執行狀態可以容易的序列化</li>
 <li>它不難使用, 容易擴充</li>
 <li>它有完整的且易讀 (應該吧?) 的測試</li>
 </ul>
-
 <p>將來可能的計畫:</p>
-
 <ul>
 <li>實作一個通用的 React 元件去編輯行為樹資料</li>
 <li>實作 JavaScript 版本</li>

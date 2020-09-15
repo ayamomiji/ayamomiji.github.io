@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Rails form object pattern - 愛雅小舖</title>
+    <base href="http://ayaya.tw/">
+    
+    
+    
+    
+    <link rel="stylesheet" href="http://ayaya.tw/css/main.min.d1a35de747f32f38def9b85df0ddc1ae0d95ca476bb14c10d484610ddcc1acda.css">
+</head>
+<body><header>
+    <nav class="breadcrumb">
+        
+        <a href="/">/Home</a>
+        
+        <a href="/posts">/Posts</a>
+        
+        <a href="/works">/Works</a>
+        
+        <a href="/donate">/Donate</a>
+        
+        <a href="/about">/About</a>
+        
+    </nav>
+</header>
+<div class="container">
+<main id="single">
+    <h1>Rails form object pattern</h1>
+    <h2></h2>
+    <section class="post-content">
+        <p>Rails 有許多組織程式碼的 pattern, 一個經常被提到的例子是 form object.</p>
+<p>Form object 主要使用在你需要創造表單, 但該表單不直接與某個特定的 model 有關, 這類的情境有很多, 例如搜尋表單, 你可能不會想把當下搜尋的參數儲存到資料庫, 但你依然想對輸入的資料進行驗證, 如必須輸入關鍵字, 日期必須在一個月內, &hellip; 這時候就可以自行創造一個 SearchForm model 專門負責處理搜尋表單的資料驗證.</p>
+<p>以前經常使用 <a href="https://github.com/solnic/virtus">Virtus</a> 實作, 但它已經不再更新了, 而它的接班人 dry-rb 又有點&hellip; 雖然強大, 太過於複雜了, 而且許多地方的設計與 Rails 格格不入, 想要開心使用的話必須要做很多工, 而且還要說服其他同事接受, 真的有點困難.</p>
+<p>其實 Rails 的 ActiveModel 提供了非常多的的小工具, 可以幫助我們設計 form object, 而且可以輕易的與 form helper 接軌, 網路上也有非常多相關的文章. 那我為什麼要寫這篇呢? 因為最近有人正好問到我, 我發現有許多資料都有點舊了 (但依然是值得去閱讀的, 我不打算重複寫太多原理), Rails 6 有著更多內建方便的好東西去把這件事情做更好, 因此我想分享的是一個較新, 並且可簡單驗證與測試的 pattern.</p>
+<p>通用 form object module, 可定義欄位並強制轉型, 以及經常使用的 callbacks:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> ApplicationForm
+  <span style="color:#66d9ef">extend</span> <span style="color:#66d9ef">ActiveSupport</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Concern</span>
+  <span style="color:#66d9ef">include</span> <span style="color:#66d9ef">ActiveModel</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Model</span>
+  <span style="color:#66d9ef">include</span> <span style="color:#66d9ef">ActiveModel</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Attributes</span>
+  <span style="color:#66d9ef">include</span> <span style="color:#66d9ef">ActiveModel</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Validations</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Callbacks</span>
+
+  included <span style="color:#66d9ef">do</span>
+    <span style="color:#75715e"># adds before_call, after_call</span>
+    define_model_callbacks <span style="color:#e6db74">:call</span>
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">save</span>
+    validate<span style="color:#f92672">.</span>tap <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span>
+      run_callbacks(<span style="color:#e6db74">:call</span>) { call } <span style="color:#66d9ef">if</span> result
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">inspect</span>
+    <span style="color:#e6db74">&#34;#&lt;</span><span style="color:#e6db74">#{</span>self<span style="color:#f92672">.</span>class<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">#{</span>attributes<span style="color:#e6db74">}</span><span style="color:#e6db74">&gt;&#34;</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>直接 include 它, 定義需要的東西即可. 以下是搜尋表單範例, 限制關鍵字最短長度, 去除頭尾空白:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SearchForm</span>
+  <span style="color:#66d9ef">include</span> <span style="color:#66d9ef">ApplicationForm</span>
+  
+  attribute <span style="color:#e6db74">:keyword</span>, <span style="color:#e6db74">:string</span>
+  <span style="color:#66d9ef">attr_reader</span> <span style="color:#e6db74">:result</span>
+  
+  validates <span style="color:#e6db74">:keyword</span>, <span style="color:#e6db74">length</span>: { <span style="color:#e6db74">minimal</span>: <span style="color:#ae81ff">2</span> }
+
+  before_validation <span style="color:#e6db74">:strip_keyword</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">strip_keyword</span>
+    self<span style="color:#f92672">.</span>keyword <span style="color:#f92672">=</span> keyword<span style="color:#f92672">.</span>try(<span style="color:#e6db74">:strip</span>)
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>
+    @result <span style="color:#f92672">=</span> <span style="color:#66d9ef">Model</span><span style="color:#f92672">.</span>search(keyword)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>使用方法:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">@form <span style="color:#f92672">=</span> <span style="color:#66d9ef">SearchForm</span><span style="color:#f92672">.</span>new(params<span style="color:#f92672">[</span><span style="color:#e6db74">:form</span><span style="color:#f92672">]</span>)
+<span style="color:#66d9ef">if</span> @form<span style="color:#f92672">.</span>save
+  @models <span style="color:#f92672">=</span> @form<span style="color:#f92672">.</span>result
+<span style="color:#66d9ef">else</span>
+  render <span style="color:#e6db74">:search</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><pre><code class="language-erb" data-lang="erb">&lt;%= simple_form_for @form do |f| %&gt;
+  &lt;%= f.input :keyword %&gt;
+  &lt;%= f.button :submit %&gt;
+&lt;% end %&gt;
+</code></pre><p>單元測試:</p>
+<pre><code>require 'rails_helper'
+
+RSpec.describe SearchForm, type: :model do
+  context 'keyword is too short' do
+    subject(:form) { SearchForm.new(keyword: 'x') }
+    # not good if you have many attributes to check
+    it { is_expected.to be_invalid }
+
+    # just check errors for passed attribute
+    it 'should have error on keyword' do
+      form.validate
+      expect(form.errors[:keyword]).to include('is too short (minimum is 2 characters)')
+    end
+
+    # or use rspec-collection_matchers, the recommended way
+    it { is_expected.to have(1).error_on(:keyword) }
+  end
+
+  context 'keyword is valid' do
+    subject(:form) { SearchForm.new(keyword: 'ayaya') }
+    it 'finds models' do
+      form.save
+      expect(form.result).to be_present
+    end
+  end
+end
+</code></pre><p>對於較複雜的搜尋, 我則建議 form object 只進行參數檢查, 檢查完後可將資料交由專門產生查詢的 query object 處理.</p>
+
+    </section>
+</main>
+
+        </div><footer>
+    <ul class="lang-selector">
+    
+</ul>
+
+    <span class="footer-text">Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></span>
+</footer>
+
+<script src="http://ayaya.tw/js/highlight.pack.13389e4e093fc0b3466287ead64c1f9fc3007d7703813a413de3f046ea09a346.js" integrity="sha256-EzieTgk/wLNGYofq1kwfn8MAfXcDgTpBPePwRuoJo0Y="></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

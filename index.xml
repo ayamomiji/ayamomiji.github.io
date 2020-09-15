@@ -6,10 +6,19 @@
     <description>Recent content in Home on 愛雅小舖</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-TW</language>
-    <lastBuildDate>Mon, 25 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 14 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ayaya.tw/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Rails form object pattern</title>
+      <link>http://ayaya.tw/posts/2020/rails-form-objects-pattern/</link>
+      <pubDate>Mon, 14 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2020/rails-form-objects-pattern/</guid>
+      <description>Rails 有許多組織程式碼的 pattern, 一個經常被提到的例子是 form object. Form object 主要使用在你需要創造表單, 但該表單不直接與某個特定的 model 有關, 這類的情境有很多, 例如搜尋表</description>
+    </item>
     
     <item>
       <title>BehaveFun: 使用 Ruby 實作的行為樹</title>
@@ -26,7 +35,7 @@
       <pubDate>Fri, 07 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>http://ayaya.tw/posts/2020/ruby-lazy-enumerator-example/</guid>
-      <description>善用 lazy enumerator 除了可以增進效能以外, 還能夠讓程式更容易閱讀, 像是以下這個例子: response = Faraday.get(url) body = Oga.parse_html(response.body) body.css(&#39;meta[property=&amp;quot;og:image&amp;quot;]&#39;).first.try(:get, &#39;content&#39;) || body.css(&#39;link[rel=&amp;quot;image_src&amp;quot;]&#39;).first.try(:get, &#39;href&#39;) || body.css(&#39;img&#39;).first.try(:get, &#39;src&#39;) 這段程式碼嘗試從 html 中解析出適合作為該網頁</description>
+      <description>善用 lazy enumerator 除了可以增進效能以外, 還能夠讓程式更容易閱讀, 像是以下這個例子: response = Faraday.get(url) body = Oga.parse_html(response.body) body.css(&amp;#39;meta[property=&amp;#34;og:image&amp;#34;]&amp;#39;).first.try(:get, &amp;#39;content&amp;#39;) || body.css(&amp;#39;link[rel=&amp;#34;image_src&amp;#34;]&amp;#39;).first.try(:get, &amp;#39;href&amp;#39;) || body.css(&amp;#39;img&amp;#39;).first.try(:get, &amp;#39;src&amp;#39;) 這段程式碼嘗試從 html 中解析出適合作為該網頁</description>
     </item>
     
     <item>

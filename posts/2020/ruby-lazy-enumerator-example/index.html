@@ -31,40 +31,30 @@
     <h2></h2>
     <section class="post-content">
         <p>善用 lazy enumerator 除了可以增進效能以外, 還能夠讓程式更容易閱讀, 像是以下這個例子:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">response <span style="color:#f92672">=</span> <span style="color:#66d9ef">Faraday</span><span style="color:#f92672">.</span>get(url)
+body <span style="color:#f92672">=</span> <span style="color:#66d9ef">Oga</span><span style="color:#f92672">.</span>parse_html(response<span style="color:#f92672">.</span>body)
 
-<pre><code class="language-ruby">response = Faraday.get(url)
-body = Oga.parse_html(response.body)
-
-body.css('meta[property=&quot;og:image&quot;]').first.try(:get, 'content') ||
-  body.css('link[rel=&quot;image_src&quot;]').first.try(:get, 'href') ||
-  body.css('img').first.try(:get, 'src')
-</code></pre>
-
-<p>這段程式碼嘗試從 html 中解析出適合作為該網頁縮圖的圖片, 但有幾個不太舒服的點:</p>
-
+body<span style="color:#f92672">.</span>css(<span style="color:#e6db74">&#39;meta[property=&#34;og:image&#34;]&#39;</span>)<span style="color:#f92672">.</span>first<span style="color:#f92672">.</span>try(<span style="color:#e6db74">:get</span>, <span style="color:#e6db74">&#39;content&#39;</span>) <span style="color:#f92672">||</span>
+  body<span style="color:#f92672">.</span>css(<span style="color:#e6db74">&#39;link[rel=&#34;image_src&#34;]&#39;</span>)<span style="color:#f92672">.</span>first<span style="color:#f92672">.</span>try(<span style="color:#e6db74">:get</span>, <span style="color:#e6db74">&#39;href&#39;</span>) <span style="color:#f92672">||</span>
+  body<span style="color:#f92672">.</span>css(<span style="color:#e6db74">&#39;img&#39;</span>)<span style="color:#f92672">.</span>first<span style="color:#f92672">.</span>try(<span style="color:#e6db74">:get</span>, <span style="color:#e6db74">&#39;src&#39;</span>)
+</code></pre></div><p>這段程式碼嘗試從 html 中解析出適合作為該網頁縮圖的圖片, 但有幾個不太舒服的點:</p>
 <ol>
 <li>因為元素可能不存在, 因此當中使用了很多 <code>try</code> 一一檢查.</li>
 <li>寫成一排太長, 但因為是長敘述換行, 不縮排也很奇怪, 怎樣都不舒服.</li>
 </ol>
-
 <p>現實中也是常有這種 &ldquo;先嘗試 A, 不行的話做 B, 還是不行的話做 C&rdquo;, 如果 A, B, C 很複雜的話, 通常會寫成 method, 大概像這樣:</p>
-
-<pre><code class="language-ruby">find_image_from_og(body) || find_image_from_rel(body) || find_image_from_img_tag(body)
-</code></pre>
-
-<p>但這裡也可以使用 lazy enumerator 來做這件事情, 寫起來像這樣:</p>
-
-<pre><code class="language-ruby">def try_blocks(*blocks)
-  blocks.lazy.map { |block| block.call rescue nil }.reject(&amp;:blank?).first
-end
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">find_image_from_og(body) <span style="color:#f92672">||</span> find_image_from_rel(body) <span style="color:#f92672">||</span> find_image_from_img_tag(body)
+</code></pre></div><p>但這裡也可以使用 lazy enumerator 來做這件事情, 寫起來像這樣:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">try_blocks</span>(<span style="color:#f92672">*</span>blocks)
+  blocks<span style="color:#f92672">.</span>lazy<span style="color:#f92672">.</span>map { <span style="color:#f92672">|</span>block<span style="color:#f92672">|</span> block<span style="color:#f92672">.</span>call <span style="color:#66d9ef">rescue</span> <span style="color:#66d9ef">nil</span> }<span style="color:#f92672">.</span>reject(<span style="color:#f92672">&amp;</span><span style="color:#e6db74">:blank?</span>)<span style="color:#f92672">.</span>first
+<span style="color:#66d9ef">end</span>
 
 try_blocks(
-  -&gt; { body.css('meta[property=&quot;og:image&quot;]').first.get('content') },
-  -&gt; { body.css('link[rel=&quot;image_src&quot;]').first.get('href') },
-  -&gt; { body.css('img').first.get('src') }
+  <span style="color:#f92672">-&gt;</span> { body<span style="color:#f92672">.</span>css(<span style="color:#e6db74">&#39;meta[property=&#34;og:image&#34;]&#39;</span>)<span style="color:#f92672">.</span>first<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;content&#39;</span>) },
+  <span style="color:#f92672">-&gt;</span> { body<span style="color:#f92672">.</span>css(<span style="color:#e6db74">&#39;link[rel=&#34;image_src&#34;]&#39;</span>)<span style="color:#f92672">.</span>first<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;href&#39;</span>) },
+  <span style="color:#f92672">-&gt;</span> { body<span style="color:#f92672">.</span>css(<span style="color:#e6db74">&#39;img&#39;</span>)<span style="color:#f92672">.</span>first<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;src&#39;</span>) }
 )
-</code></pre>
-
+</code></pre></div>
     </section>
 </main>
 
