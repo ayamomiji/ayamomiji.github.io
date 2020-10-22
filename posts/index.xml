@@ -6,10 +6,19 @@
     <description>Recent content in Posts on 愛雅小舖</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-TW</language>
-    <lastBuildDate>Mon, 14 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 22 Oct 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://ayaya.tw/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ruby 的 `then`</title>
+      <link>http://ayaya.tw/posts/2020/ruby-then/</link>
+      <pubDate>Thu, 22 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://ayaya.tw/posts/2020/ruby-then/</guid>
+      <description>在 Ruby 2.5 為物件引進了 yield_self 方法, 但是方法名字很長, 因此在 Ruby 2.6 時為他新增了一個別名: then. 這個方法與 tap 類似, 不同的點在於 tap 回傳自己, 但 then 回傳的是執行結果</description>
+    </item>
     
     <item>
       <title>Rails form object pattern</title>

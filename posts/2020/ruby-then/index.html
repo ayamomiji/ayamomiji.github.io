@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ruby 的 `then` - 愛雅小舖</title>
+    <base href="http://ayaya.tw/">
+    
+    
+    
+    
+    <link rel="stylesheet" href="http://ayaya.tw/css/main.min.d1a35de747f32f38def9b85df0ddc1ae0d95ca476bb14c10d484610ddcc1acda.css">
+</head>
+<body><header>
+    <nav class="breadcrumb">
+        
+        <a href="/">/Home</a>
+        
+        <a href="/posts">/Posts</a>
+        
+        <a href="/works">/Works</a>
+        
+        <a href="/donate">/Donate</a>
+        
+        <a href="/about">/About</a>
+        
+    </nav>
+</header>
+<div class="container">
+<main id="single">
+    <h1>Ruby 的 `then`</h1>
+    <h2></h2>
+    <section class="post-content">
+        <p>在 Ruby 2.5 為物件引進了 <code>yield_self</code> 方法, 但是方法名字很長, 因此在 Ruby 2.6 時為他新增了一個別名: <code>then</code>.
+這個方法與 <code>tap</code> 類似, 不同的點在於 <code>tap</code> 回傳自己, 但 <code>then</code> 回傳的是執行結果.</p>
+<p>善用這兩個方法可以寫出更清楚易懂的程式碼, 並且減少指派 (減少你需要去煩惱 &ldquo;這個變數該叫什麼名字&rdquo; 的困擾).</p>
+<p>直接來看看一個來自真實世界的範例.
+需求是有一系列的圖片, 希望能模糊化且半透明化, 我們使用 <a href="https://github.com/janko/image_processing">image_processing</a>, 而我在閱讀文件後得知.
+我大概需要下 <code>-gaussian-blur 0x16 -alpha set -channel A +level 0,20%</code> 這樣的指令去完成我想做的事情.
+注意 <code>level</code> 參數是加號開頭的, 在 image_processing 時需要在該參數後面添加加號, 因此我應該要寫成:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># WRONG: NoMethodError (undefined method `call&#39; for &#34;0,20%&#34;:String)</span>
+image <span style="color:#f92672">=</span> <span style="color:#66d9ef">ImageProcessing</span><span style="color:#f92672">::</span><span style="color:#66d9ef">MiniMagick</span><span style="color:#f92672">.</span>source(original)
+image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;png&#39;</span>)
+     <span style="color:#f92672">.</span>gaussian_blur(<span style="color:#e6db74">&#39;0x16&#39;</span>)
+     <span style="color:#f92672">.</span>alpha(<span style="color:#e6db74">&#39;set&#39;</span>)
+     <span style="color:#f92672">.</span>channel(<span style="color:#e6db74">&#39;A&#39;</span>)
+     <span style="color:#f92672">.</span>level<span style="color:#f92672">+</span>(<span style="color:#e6db74">&#39;0,20%&#39;</span>)
+     <span style="color:#f92672">.</span>call
+</code></pre></div><p>因為 <code>+</code> 的優先權比較低, 因此 <code>('0,20%').call</code> 被先行計算了, 我沒辦法舒服的 chain 下去, 難道我只能寫成這樣嗎?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># BAD</span>
+image <span style="color:#f92672">=</span> <span style="color:#66d9ef">ImageProcessing</span><span style="color:#f92672">::</span><span style="color:#66d9ef">MiniMagick</span><span style="color:#f92672">.</span>source(original)
+(image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;png&#39;</span>)
+     <span style="color:#f92672">.</span>gaussian_blur(<span style="color:#e6db74">&#39;0x16&#39;</span>)
+     <span style="color:#f92672">.</span>alpha(<span style="color:#e6db74">&#39;set&#39;</span>)
+     <span style="color:#f92672">.</span>channel(<span style="color:#e6db74">&#39;A&#39;</span>)
+     <span style="color:#f92672">.</span>level<span style="color:#f92672">+</span>(<span style="color:#e6db74">&#39;0,20%&#39;</span>))
+     <span style="color:#f92672">.</span>call
+
+<span style="color:#75715e"># BAD</span>
+image_before_call <span style="color:#f92672">=</span> image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;png&#39;</span>)
+                         <span style="color:#f92672">.</span>gaussian_blur(<span style="color:#e6db74">&#39;0x16&#39;</span>)
+                         <span style="color:#f92672">.</span>alpha(<span style="color:#e6db74">&#39;set&#39;</span>)
+                         <span style="color:#f92672">.</span>channel(<span style="color:#e6db74">&#39;A&#39;</span>)
+                         <span style="color:#f92672">.</span>level<span style="color:#f92672">+</span>(<span style="color:#e6db74">&#39;0,20%&#39;</span>)
+image_before_call<span style="color:#f92672">.</span>call
+</code></pre></div><p>想像一下, 日後如果你需要 &ldquo;加&rdquo; 更多東西的時候該怎麼辦呢?
+優美的 ruby 是不容許這麼難看的東西出現的! 幸好我們有 <code>then</code> 方法, 可以幫我們把那個 <code>.level+</code> 包起來, 去避免使用大範圍的括號調整優先權, 或者使用一個不知道該怎麼取名的臨時變數.</p>
+<p>最後的結果如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># GOOD</span>
+image <span style="color:#f92672">=</span> <span style="color:#66d9ef">ImageProcessing</span><span style="color:#f92672">::</span><span style="color:#66d9ef">MiniMagick</span><span style="color:#f92672">.</span>source(original)
+image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;png&#39;</span>)
+     <span style="color:#f92672">.</span>gaussian_blur(<span style="color:#e6db74">&#39;0x16&#39;</span>)
+     <span style="color:#f92672">.</span>alpha(<span style="color:#e6db74">&#39;set&#39;</span>)
+     <span style="color:#f92672">.</span>channel(<span style="color:#e6db74">&#39;A&#39;</span>)
+     <span style="color:#f92672">.</span>then { _1<span style="color:#f92672">.</span>level<span style="color:#f92672">+</span>(<span style="color:#e6db74">&#39;0,20%&#39;</span>) }
+     <span style="color:#f92672">.</span>call
+</code></pre></div><p>使用 <code>tap</code> 與 <code>then</code> 你幾乎可以 chain 任何你想 chain 的東西, 請善用它們, 讓程式碼看起來更舒服吧.</p>
+
+    </section>
+</main>
+
+        </div><footer>
+    <ul class="lang-selector">
+    
+</ul>
+
+    <span class="footer-text">Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></span>
+</footer>
+
+<script src="http://ayaya.tw/js/highlight.pack.13389e4e093fc0b3466287ead64c1f9fc3007d7703813a413de3f046ea09a346.js" integrity="sha256-EzieTgk/wLNGYofq1kwfn8MAfXcDgTpBPePwRuoJo0Y="></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
